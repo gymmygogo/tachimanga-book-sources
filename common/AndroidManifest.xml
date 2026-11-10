@@ -1,16 +1,29 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- 声明这是 Tachiyomi 扩展 -->
+    <uses-feature
+        android:name="tachiyomi.extension"
+        android:required="false" />
+
+    <!-- 网络访问权限 -->
+    <uses-permission
+        android:name="android.permission.INTERNET" />
+
     <application
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
         android:label="${appName}"
         android:supportsRtl="true">
+
         <meta-data
             android:name="tachiyomi.extension.class"
             android:value="${extClass}" />
+
         <meta-data
             android:name="tachiyomi.extension.nsfw"
             android:value="${nsfw}" />
+
     </application>
 </manifest>
