@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """Build Tachimanga index.min.json from assembled APKs."""
 
@@ -30,33 +31,46 @@ def find_apk(pkg_suffix: str) -> Path | None:
 def main() -> None:
     if OUT.exists():
         shutil.rmtree(OUT)
+
     OUT.mkdir(parents=True)
 
-APK_OUT = OUT / "apk"
-APK_OUT.mkdir(parents=True, exist_ok=True)
+    # 创建 APK 子目录
+    APK_OUT = OUT / "apk"
+    APK_OUT.mkdir(parents=True, exist_ok=True)
 
     index = []
     missing = []
+
     for item in SOURCES:
         pkg = item["pkg"]
         suffix = pkg.split("extension.", 1)[-1]
         apk_path = find_apk(suffix)
+
         if apk_path is None:
             missing.append(pkg)
             continue
+
         apk_name = item["apk"]
+
+        # 将 APK 复制到 apk/ 子目录
         shutil.copy2(apk_path, APK_OUT / apk_name)
+
         sources = []
         for src in item["sources"]:
             sources.append(
                 {
                     "name": src["name"],
                     "lang": src["lang"],
-                    "id": source_id(src["name"], src["lang"], src.get("versionId", 1)),
+                    "id": source_id(
+                        src["name"],
+                        src["lang"],
+                        src.get("versionId", 1)
+                    ),
                     "baseUrl": src["baseUrl"],
                     "versionId": src.get("versionId", 1),
                 }
             )
+
         index.append(
             {
                 "name": f"Tachiyomi: {item['name']}",
@@ -71,16 +85,29 @@ APK_OUT.mkdir(parents=True, exist_ok=True)
         )
 
     (OUT / "index.min.json").write_text(
-        json.dumps(index, ensure_ascii=False, separators=(",", ":")),
+        json.dumps(
+            index,
+            ensure_ascii=False,
+            separators=(",", ":")
+        ),
         encoding="utf-8",
     )
+
     (OUT / "index.json").write_text(
-        json.dumps(index, ensure_ascii=False, indent=2),
+        json.dumps(
+            index,
+            ensure_ascii=False,
+            indent=2
+        ),
         encoding="utf-8",
     )
+
     print(f"Wrote {len(index)} extensions to {OUT}")
+
     if missing:
-        raise SystemExit("Missing APKs for: " + ", ".join(missing))
+        raise SystemExit(
+            "Missing APKs for: " + ", ".join(missing)
+        )
 
 
 if __name__ == "__main__":
