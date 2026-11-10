@@ -32,6 +32,9 @@ def main() -> None:
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
 
+APK_OUT = OUT / "apk"
+APK_OUT.mkdir(parents=True, exist_ok=True)
+
     index = []
     missing = []
     for item in SOURCES:
@@ -42,7 +45,7 @@ def main() -> None:
             missing.append(pkg)
             continue
         apk_name = item["apk"]
-        shutil.copy2(apk_path, OUT / apk_name)
+        shutil.copy2(apk_path, APK_OUT / apk_name)
         sources = []
         for src in item["sources"]:
             sources.append(
